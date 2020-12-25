@@ -55,9 +55,9 @@
                 <base-button style="width:100%;background:blueviolet" @click="joinWithId()">Join Room</base-button>
               </div>
             </div>
-            <div id="video">
+            <div id="videos">
             </div>
-            <div id="childVideo"></div>
+            <!-- <div id="childVideo"></div> -->
           </card>
         </fade-transition>
       </div>
@@ -97,120 +97,45 @@ export default {
     };
   },
   mounted() {
-    // let ls = new secure();
-    // if (!localStorage.getItem("user")) {
-    //   this.$router.push("/");
-    // } else {
-      // this.userId = ls.get("user").id;
-      this.userId = `${(Math.random() * 100000).toFixed(6)}`;
-      // this.getListCourse(this.userId);
+    let ls = new secure();
+    if (!localStorage.getItem("user")) {
+      this.$router.push("/");
+    } else {
+      this.userId = ls.get("user").id;
+      this.getListCourse(this.userId);
       if(this.$route.query.roomid) {
         this.roomId = this.$route.query.roomid;
-        this.joinWithId();
+        // this.joinWithId();
       }
       this.setRestToken();
-    // }
+    }
   },
   methods: {
-    joinWithId: async function(roomId) {
-      if (this.roomId) {
-        await this.joinRoom();
-      }
-    },
-    joinRoom: async function() {
-      var roomToken = await this.getRoomToken(this.roomId);
-      this.roomToken = roomToken;
-      await this.authen(this.userId);
-      await this.publicVideo();
-    },
-    async updateRoom() {
-      var course = await Course.update();
-    },
-    async getListCourse(userId) {
-      var result = await Course.getCourseByUser({userId:userId});
-      if(result.data.status) {
-        this.courses = result.data.courses;
-      }
-    },
-    async publicVideo(screenSharing = false) {
-      var localTrack = await StringeeVideo.createLocalVideoTrack(this.callClient, {
-        audio:true, video:true,
-        screen: screenSharing,
-        videoDimensions : { width:300, height:150} 
-        });
-        var videoContainer1 = document.querySelector('#video');
-        var videoElement = localTrack.attach();
-        this.addVideo(videoContainer1,videoElement);
-        var roomData = await StringeeVideo.joinRoom(this.callClient, this.roomToken);
-        var room = roomData.room;
-        console.log({roomData, room});
-        if (!this.room) {
-        this.room = room;
-        room.clearAllOnMethos();
-        // them join room
-        // room.on('addtrack',  function (event) {
-        //   var track = event.info.track;
-        //   console.log("addtrack", track);
-        //   if (track.serverId === localTrack.serverId) {
-        //     console.log("local");
-        //     return;
-        //   }
-        //     this.subscribe(track);
-        // });
-        // roomData.listTracksInfo.forEach(info =>  {console.log(info); this.subscribe(info)});
-        // }
-          room.on('addtrack', function (event) {
-              console.log('on add track: ' + JSON.stringify(event.info));
-              var local = false;
-              localTrack.forEach(function (localTrack2) {
-                  if (localTrack2.serverId === event.info.track.serverId) {
-                      console.log(localTrack2.serverId + ' is LOCAL');
-                      local = true;
-                  }
-              });
-              if (!local) {
-                  subscribe(event.info.track);
-              }
-          });
-        }
-      room.publish(localTrack);
-      console.log("room publish successful");
-    },
+    // new 1 room for course
     async newRoom() {
+      console.log('START NEW ROOM');
       let ls = new secure();
       var userId = ls.get("user").id;
-      console.log('new moi room');
       var room = await this.createRoom();
       this.roomToken = await this.getRoomToken(this.room.roomId);
-      console.log(this.roomToken);
+      console.log('DONE GET ROOM TOKEN');
       await this.authen(userId);
+      console.log('DONE GET CLIENT ON STREAM');
       await this.publicVideo();
+      console.log('DONE APPEND LOCAL VIDEO');
       var linkJoinRoom = window.location.href + '?roomid=' + this.roomId;
       console.log(linkJoinRoom);
       //update room
     },
-    async subscribe(trackInfo) {
-      var track = await this.room.subscribe(trackInfo.serverId);
-      track.on('ready', () => {
-        var containerEle = document.querySelector('#childVideo');
-        var ele = track.attach();
-        this.addVideo(containerEle, ele);
-      });
-    },
-    addVideo(container,video) {
-      video.setAttribute("controls", "true");
-      video.setAttribute("playsinline", "true");
-      container.append(video);
-    },
+    // GET CLIENT ON STREAM
     authen: function(userId) {
       return new Promise(async resolve => {
         var userToken = await this.getUserToken(userId);
         this.userToken = userToken;
         if (!this.callClient) {
           var client = new StringeeClient();
-
           client.on("authen", function(res) {
-            console.log("on authen: ", res);
+            // console.log("on authen: ", res);
             resolve(res);
           });
           this.callClient = client;
@@ -218,10 +143,108 @@ export default {
         this.callClient.connect(userToken);
       });
     },
+    // APPEND VIDEO
+    async publicVideo(screenSharing = false) {
+      const localTrack = await StringeeVideo.createLocalVideoTrack(this.callClient, {
+        audio:true, video:true,
+        screen: screenSharing,
+        videoDimensions : { width:300, height:150} 
+        });
+        var videoContainer1 = document.querySelector('#videos');
+        var videoElement = localTrack.attach();
+        this.addVideo(videoContainer1,videoElement);
+        var roomData = await StringeeVideo.joinRoom(this.callClient, this.roomToken);
+        var room = roomData.room;
+        // console.log({roomData, room});
+        console.log('ROOM IS', this.room);
+        if(!this.room) {
+          this.room = room;
+        room.clearAllOnMethos();
+        // room.on('joinroom', function(event) {
+        //   console.log('on join room: ' + JSON.stringify(event.info));
+        // })
+        // them join room
+          room.on("addtrack", await function(e) {
+            const track = e.info.track;
+
+            console.log("addtrack", track);
+            if (track.serverId === localTrack.serverId) {
+              console.log("local");
+              return;
+            }
+            this.subscribe(track);
+          });
+          room.on("removetrack", e => {
+            const track = e.track;
+            if (!track) { 
+              return;
+            }
+
+            var mediaElements = track.detach();
+            mediaElements.forEach(element => element.remove());
+          });
+        }
+        roomData.listTracksInfo.forEach(info =>  {console.log(info); this.subscribe(info)});
+        room.publish(localTrack);
+      // console.log("room publish successful");
+    },
+
+    // JOIN ROOM WITH ID
+    joinWithId: async function() {
+      if (this.roomId) {
+        console.log('CHECK ROOM ID SUCCESS');
+        await this.joinRoom();
+        return;
+      }
+      console.log('NOT FOUND ROOM ID');
+    },
+
+    joinRoom: async function() {
+      var roomToken = await this.getRoomToken(this.roomId);
+      this.roomToken = roomToken;
+      console.log('DONE GET ROOM TOKEN BY USER');
+      await this.authen(this.userId);
+      console.log('DONE GET CLIENT FOR USER');
+      await this.publicVideo();
+      console.log('DONE APPEND VIDEO FOR USER');
+    },
+
+    async updateRoom() {
+      var course = await Course.update();
+    },
+
+    async getListCourse(userId) {
+      var result = await Course.getCourseByUser({userId:userId});
+      if(result.data.status) {
+        this.courses = result.data.courses;
+      }
+    },
+
+    
+    
+    async subscribe(trackInfo) {
+       var track = await this.room.subscribe(trackInfo.serverId);
+      track.on('ready', () => {
+         var containerEle = document.querySelector('#videos');
+         var ele = track.attach();
+        this.addVideo(containerEle, ele);
+      });
+    },
+
+    addVideo(container,video) {
+      // video.setAttribute("video","true");
+      // video.setAttribute("audio","true");
+      video.setAttribute("controls", "true");
+      video.setAttribute("playsinline", "true");
+      console.log(video);
+      container.append(video);
+    },
+    
     async setRestToken() {
       var tokens = await this._getToken({ rest: true });
       this.restToken = tokens.rest_access_token;
     },
+
     async _getToken({userId, roomId, rest }) {
       return await axios.get(
         "https://v2.stringee.com/web-sdk-conference-samples/php/token_helper.php",
@@ -238,19 +261,23 @@ export default {
         return res.data;
       });
     },
+
     async getUserToken(userId) {
       var tokens = await this._getToken({ userId });
       return tokens.access_token;
     },
+
     _authHeader() {
         return {
           "X-STRINGEE-AUTH": this.restToken
         };
     },
+
     async getRoomToken(roomId) {
       var tokens = await this._getToken({ roomId:this.roomId, rest:true });
       return tokens.room_token;
     },
+
     async createRoom() {
       var roomName = Math.random().toFixed(4);
       var response = await axios.post(
@@ -268,20 +295,20 @@ export default {
       this.roomId = response.data.roomId;
       return room;
     },
-    async getRoomID() {
-      this.room_id = this.uuidv4();
-      if(this.room_id != '' && this.room_id != undefined) {
-        var result = await Stream.createRoom();
+  },
+
+  async publish (screenSharing = false) {
+    const localTrack = await StringeeVideo.createLocalVideoTrack(
+      this.callClient,
+      {
+        audio: true,
+        video: true,
+        screen: screenSharing,
+        videoDimensions: { width: 300, height: 150 }
       }
-    },
-    uuidv4() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16)
-  });
-}
+    );
   }
-};
+}
 </script>
 <style>
 /* #stream #video{
@@ -306,7 +333,6 @@ export default {
 }
 
 #videos video {
-  border: solid 2px red;
   flex: 1 1 50%;
   padding: 0;
   min-width: 0;

@@ -8,6 +8,11 @@
           icon="tim-icons icon-chart-pie-36"
         />
         <sidebar-link
+          to="/stream"
+          :name="$t('stream')"
+          icon="tim-icons icon-video-66"
+        />
+        <sidebar-link
           to="/create-course"
           :name="$t('Create Course')"
           icon="tim-icons icon-simple-add"
@@ -21,11 +26,6 @@
           to="/profile"
           :name="$t('User Profile')"
           icon="tim-icons icon-single-02"
-        />
-        <sidebar-link
-          to="/calendar"
-          :name="$t('calendar')"
-          icon="tim-icons icon-calendar-60"
         />
         <sidebar-link
           to="/statistical"

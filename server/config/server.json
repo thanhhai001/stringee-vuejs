@@ -1,5 +1,5 @@
 {
     "port":3005,
-    "origin": ["http://localhost:3000","https://script.google.com","http://34.85.1.168","http://34.85.1.168:2000","https://vue-learn-online-express.herokuapp.com/"]
+    "origin": ["http://localhost:3000","https://script.google.com","http://34.85.1.168","http://34.85.1.168:2000","https://e-learning.isbservice.com"]
 
 }

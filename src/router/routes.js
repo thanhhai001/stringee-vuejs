@@ -8,7 +8,7 @@ import NotFound from "@/pages/NotFoundPage.vue";
 const Home = () => import("@/pages/Home.vue");
 const Login = () => import("@/pages/Login.vue");
 const Profile = () => import("@/pages/Profile.vue");
-const Calendar = () => import("@/pages/Calendar.vue");
+const Stream = () => import("@/pages/Stream.vue");
 const Course = () => import("@/pages/Course.vue");
 const CourseDetail = () => import("@/pages/CourseDetail.vue");
 const CreateCourse = () => import("@/pages/CreateCourse.vue");
@@ -39,14 +39,9 @@ const routes = [
     component: Profile
   },
   {
-    path: "/calendar",
-    name: "calendar",
-    component: Calendar
-  },
-  {
-    path: "/calendar/*",
-    name: "calendar",
-    component: Calendar
+    path: "/stream",
+    name: "stream",
+    component: Stream
   },
   {
     path: "/course",
