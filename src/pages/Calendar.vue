@@ -97,18 +97,19 @@ export default {
     };
   },
   mounted() {
-    let ls = new secure();
-    if (!localStorage.getItem("user")) {
-      this.$router.push("/");
-    } else {
-      this.userId = ls.get("user").id;
-      this.getListCourse(this.userId);
+    // let ls = new secure();
+    // if (!localStorage.getItem("user")) {
+    //   this.$router.push("/");
+    // } else {
+      // this.userId = ls.get("user").id;
+      this.userId = `${(Math.random() * 100000).toFixed(6)}`;
+      // this.getListCourse(this.userId);
       if(this.$route.query.roomid) {
         this.roomId = this.$route.query.roomid;
         this.joinWithId();
       }
       this.setRestToken();
-    }
+    // }
   },
   methods: {
     joinWithId: async function(roomId) {
