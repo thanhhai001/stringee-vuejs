@@ -38,7 +38,7 @@
       <top-navbar></top-navbar>
         <div class="content">
         <fade-transition :duration="100" mode="out-in">
-          <card id="stream">
+          <!-- <card id="stream">
             <div class="chose">
               <div class="col-md-2" style="float:left;padding: 10px 0;text-align: center;"><p>Select Courses: </p></div>
               <div class="col-md-4" style="float:left">
@@ -57,6 +57,40 @@
             </div>
             <div id="videos">
             </div>
+          </card> -->
+          <card>
+            <div class="container has-text-centered" v-cloak id="app">
+              <h1 class="title">
+                <!-- Ứng dụng Clone Zoom cực cool ngầu với -->
+                <!-- <span class="header-highlight">Stringee API</span> -->
+              </h1>
+
+              <div>
+                <button class="button is-primary" v-if="!room" @click="createRoom()">
+                  Tạo Meeting
+                </button>
+
+                <button class="button is-info" v-if="!room" @click="joinWithId()">
+                  Join Meeting
+                </button>
+
+                <button class="button is-info" v-if="room" @click="publish(true)">
+                  Share Desktop
+                </button>
+              </div>
+
+              <div v-if="roomId" class="info">
+                <p>Bạn đang ở trong room <strong>{{roomId}}</strong>.</p>
+                <p>
+                  Gửi link này cho bạn bè cùng join room nhé
+                  <a v-bind:href="roomUrl" target="_blank">{{roomUrl}}</a>.
+                </p>
+                <p>Hoặc bạn cũng có thể copy <code>{{roomId}}</code> để share.</p>
+              </div>
+            </div>
+            <div class="container">
+              <div id="videos"></div>
+            </div>
           </card>
         </fade-transition>
       </div>
@@ -72,82 +106,73 @@
   import {FadeTransition} from 'vue2-transitions';
   import axios from 'axios'
   import secure from "secure-ls";
+  import apiStringee from '../../api'
 export default {
   components: {
-      FadeTransition,
-      TopNavbar,
-      ContentFooter,
-      MobileMenu,
+    FadeTransition,
+    TopNavbar,
+    ContentFooter,
+    MobileMenu,
     },
   data: () => {
     return {
       courseId:'',
       userId: '',
       courses:[],
-      room: '',
-      roomId: '',
       userToken: '',
       roomToken: '',
-      projectId : "SKIuNgIgQclWM0GFSPCJO7eervWS7hKkQg",
-      projectSecret : "Tk1NaUZGVElWZ3VpNFZVQlZVVTZseWFsWTlHTndyMw==",
-      BASE_URL : "https://api.stringee.com/v1/room2",
       restToken : "",
-      callClient: undefined,
       roomUrl : "",
+      roomId: "",
+      roomToken: "",
+      room: undefined,
+      callClient: undefined
     };
   },
-  mounted() {
+  async mounted() {
     let ls = new secure();
     if (!localStorage.getItem("user")) {
       this.$router.push("/");
     } else {
+      // return new Promise( async function(resolve) {
+      //   await apiStringee.setRestToken();
+        
+      // });
+      await apiStringee.setRestToken();
       this.userId = ls.get("user").id;
       this.getListCourse(this.userId);
         if(this.$route.query.roomid) {
         this.roomId = this.$route.query.roomid;
         // this.joinRoom();
       }
-      this.setRestTokenApi();
     }
   },
   methods: {
-    async createRoom() {
-      const room = await this.createRoomAPI();
-      const { roomId } = room;
-      const roomToken = await this.getRoomTokenApi(roomId);
-
-      this.roomId = roomId;
-      this.roomToken = roomToken;
-
-      await this.authen();
-      await this.publish();
+    async getListCourse(userId) {
+      var result = await Course.getCourseByUser({userId:userId});
+      if(result.data.status) {
+        this.courses = result.data.courses;
+      }
     },
 
-    async join() {
-      const roomToken = await this.getRoomTokenApi(this.roomId);
-      this.roomToken = roomToken;
-      await this.authen();
-      await this.publish();
-    },
-
-    async authen() {
-      // return new Promise(async resolve => {
+    authen: function() {
+      return new Promise(async resolve => {
         const userId = `${(Math.random() * 100000).toFixed(6)}`;
-        const userToken = await this.getUserTokenApi(userId);
+        const userToken = await apiStringee.getUserToken(userId);
         this.userToken = userToken;
 
         if (!this.callClient) {
           const client = new StringeeClient();
 
           client.on("authen", function(res) {
+            console.log("on authen: ", res);
             resolve(res);
           });
           this.callClient = client;
         }
         this.callClient.connect(userToken);
-      // });
+      });
     },
-
     publish: async function(screenSharing = false) {
       const localTrack = await StringeeVideo.createLocalVideoTrack(
         this.callClient,
@@ -174,9 +199,13 @@ export default {
         room.clearAllOnMethos();
         room.on("addtrack", e => {
           const track = e.info.track;
+
           console.log("addtrack", track);
           if (track.serverId != localTrack.serverId) {
             this.subscribe(track);
+          } else {
+            console.log("local");
+            return;
           }
         });
         room.on("removetrack", e => {
@@ -190,114 +219,51 @@ export default {
         });
 
         // Join existing tracks
-        await roomData.listTracksInfo.forEach(info => this.subscribe(info));
+        roomData.listTracksInfo.forEach(info => this.subscribe(info));
       }
 
       await room.publish(localTrack);
       console.log("room publish successful");
     },
+    async createRoom() {
+      const room = await apiStringee.createRoom();
+      const { roomId } = room;
+      const roomToken = await apiStringee.getRoomToken(roomId);
 
-    async getListCourse(userId) {
-      var result = await Course.getCourseByUser({userId:userId});
-      if(result.data.status) {
-        this.courses = result.data.courses;
-      }
+      this.roomId = roomId;
+      this.roomToken = roomToken;
+      console.log({ roomId, roomToken });
+
+      await this.authen();
+      await this.publish();
     },
+    join: async function() {
+      const roomToken = await apiStringee.getRoomToken(this.roomId);
+      this.roomToken = roomToken;
 
-    async setRestTokenApi() {
-      const tokens = await this._getTokenApi({ rest: true });
-      const restToken = tokens.rest_access_token;
-      this.restToken = restToken;
-
-      return restToken;
+      await this.authen();
+      await this.publish();
     },
-    
-    async _getTokenApi({ userId, roomId, rest }) {
-      const response = await axios.get(
-        "https://v2.stringee.com/web-sdk-conference-samples/php/token_helper.php",
-        {
-          params: {
-            keySid: this.projectId,
-            keySecret: this.projectSecret,
-            userId,
-            roomId,
-            rest
-          }
-        }
-      );
-      const tokens = response.data;
-      return tokens;
-    },
-    
-    async createRoomAPI() {
-      const roomName = Math.random().toFixed(4);
-      const response = await axios.post(
-        `${this.BASE_URL}/create`,
-        {
-          name: roomName,
-          uniqueName: roomName
-        },
-        {
-          headers: this._authHeaderApi()
-        }
-      );
-
-      const room = response.data;
-      console.log({ room });
-      return room;
-    },
-
-    _authHeaderApi() {
-      return {
-        "X-STRINGEE-AUTH": this.restToken
-      };
-    },
-
-    async getRoomTokenApi(roomId) {
-      this.roomUrl = `https://${window.location.hostname}?room=${this.roomId}`;
-      // console.log(this.roomUrl);
-      const tokens = await this._getTokenApi({ roomId });
-      return tokens.room_token;
-    },
-
-    async joinRoom() {
-      const roomId = this.roomId;
+    joinWithId: async function() {
+      const roomId = prompt("Dán Room ID vào đây nhé!");
       if (roomId) {
-        this.roomId = roomId; 
+        this.roomId = roomId;
         await this.join();
       }
     },
-
-    async getUserTokenApi(userId) {
-      const tokens = await this._getTokenApi({ userId });
-      return tokens.access_token;
-    },
-
-    async subscribe(trackInfo) {
+    subscribe: async function(trackInfo) {
       const track = await this.room.subscribe(trackInfo.serverId);
-      track.on("ready", function() {
+      track.on("ready", () => {
         const videoElement = track.attach();
         this.addVideo(videoElement);
       });
     },
-
-     isSafari() {
-      var ua = navigator.userAgent.toLowerCase();
-      if (ua.indexOf('safari') != -1) {
-          if (ua.indexOf('chrome') > -1) {
-          } else {
-              return true;
-          }
-      }
-      return false;
-    },
-
-    addVideo(video) {
+    addVideo: function(video) {
       video.setAttribute("controls", "true");
       video.setAttribute("playsinline", "true");
-      document.querySelector('#videos').appendChild(video);
+      document.querySelector('#videos').append(video);
     }
-
+  
   }
 };
 </script>
@@ -315,6 +281,20 @@ export default {
 #stream .chose {
   padding-top: 20px;
   height: 15%;
+}
+
+[v-cloak] { display: none; }
+
+.header-highlight {
+  color: #ff4954;
+}
+
+.info {
+  padding: 1.5rem;
+}
+
+.container {
+  padding-top: 1rem;
 }
 
 #videos {

@@ -30,7 +30,7 @@ module.exports = {
       phoneNumber: {
         type: Sequelize.STRING,
       },
-      Role: {
+      role: {
         type: Sequelize.INTEGER,
       },
       status: {
