@@ -139,8 +139,8 @@ export default {
         
       // });
       await apiStringee.setRestToken();
-      this.userId = ls.get("user").id;
-      this.getListCourse(this.userId);
+      //this.userId = ls.get("user").id;
+      //this.getListCourse(this.userId);
         if(this.$route.query.roomid) {
         this.roomId = this.$route.query.roomid;
         // this.joinRoom();
