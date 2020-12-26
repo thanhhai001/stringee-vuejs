@@ -130,10 +130,10 @@ export default {
     };
   },
   async mounted() {
-    let ls = new secure();
-    if (!localStorage.getItem("user")) {
-      this.$router.push("/");
-    } else {
+    //let ls = new secure();
+    //if (!localStorage.getItem("user")) {
+    //  this.$router.push("/");
+    //} else {
       // return new Promise( async function(resolve) {
       //   await apiStringee.setRestToken();
         
@@ -145,7 +145,7 @@ export default {
         this.roomId = this.$route.query.roomid;
         // this.joinRoom();
       }
-    }
+    //}
   },
   methods: {
     async getListCourse(userId) {
