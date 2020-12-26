@@ -201,12 +201,11 @@ export default {
           const track = e.info.track;
 
           console.log("addtrack", track);
-          if (track.serverId != localTrack.serverId) {
-            this.subscribe(track);
-          } else {
+          if (track.serverId === localTrack.serverId) {
             console.log("local");
             return;
           }
+            this.subscribe(track);
         });
         room.on("removetrack", e => {
           const track = e.track;
