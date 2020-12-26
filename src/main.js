@@ -25,7 +25,7 @@ import Calendar from 'v-calendar/lib/components/calendar.umd';
 import DatePicker from 'vuejs-datepicker';
 import VTooltip from 'v-tooltip';
 import excel from 'vue-excel-export';
-
+import { StringeeClient, StringeeChat } from 'stringee-chat-js-sdk'
 Vue.use(BlackDashboard);
 Vue.use(VueRouter);
 Vue.use(DatePicker);

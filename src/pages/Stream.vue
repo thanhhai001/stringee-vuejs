@@ -107,6 +107,8 @@
   import axios from 'axios'
   import secure from "secure-ls";
   import apiStringee from '../../api'
+  import { StringeeClient, StringeeChat } from 'stringee-chat-js-sdk'
+  
 export default {
   components: {
     FadeTransition,
@@ -120,7 +122,6 @@ export default {
       userId: '',
       courses:[],
       userToken: '',
-      roomToken: '',
       restToken : "",
       roomUrl : "",
       roomId: "",
@@ -130,22 +131,22 @@ export default {
     };
   },
   async mounted() {
-    //let ls = new secure();
-    //if (!localStorage.getItem("user")) {
-    //  this.$router.push("/");
-    //} else {
+    // let ls = new secure();
+    // if (!localStorage.getItem("user")) {
+    //   this.$router.push("/");
+    // } else {
       // return new Promise( async function(resolve) {
       //   await apiStringee.setRestToken();
         
       // });
       await apiStringee.setRestToken();
-      //this.userId = ls.get("user").id;
-      //this.getListCourse(this.userId);
+      // this.userId = ls.get("user").id;
+      // this.getListCourse(this.userId);
         if(this.$route.query.roomid) {
         this.roomId = this.$route.query.roomid;
         // this.joinRoom();
       }
-    //}
+    // }
   },
   methods: {
     async getListCourse(userId) {
@@ -157,12 +158,12 @@ export default {
 
     authen: function() {
       return new Promise(async resolve => {
-        const userId = `${(Math.random() * 100000).toFixed(6)}`;
-        const userToken = await apiStringee.getUserToken(userId);
+        var userId = `${(Math.random() * 100000).toFixed(6)}`;
+        var userToken = await apiStringee.getUserToken(userId);
         this.userToken = userToken;
 
         if (!this.callClient) {
-          const client = new StringeeClient();
+          var client = new StringeeClient();
 
           client.on("authen", function(res) {
             console.log("on authen: ", res);
@@ -174,7 +175,7 @@ export default {
       });
     },
     publish: async function(screenSharing = false) {
-      const localTrack = await StringeeVideo.createLocalVideoTrack(
+      var localTrack = await StringeeVideo.createLocalVideoTrack(
         this.callClient,
         {
           audio: true,
@@ -184,36 +185,36 @@ export default {
         }
       );
 
-      const videoElement = localTrack.attach();
+      var videoElement = localTrack.attach();
       this.addVideo(videoElement);
 
-      const roomData = await StringeeVideo.joinRoom(
+      var roomData = await StringeeVideo.joinRoom(
         this.callClient,
         this.roomToken
       );
-      const room = roomData.room;
+      var room = roomData.room;
       console.log({ roomData, room });
 
       if (!this.room) {
         this.room = room;
         room.clearAllOnMethos();
         room.on("addtrack", e => {
-          const track = e.info.track;
+          var track = e.info.track;
 
           console.log("addtrack", track);
           if (track.serverId === localTrack.serverId) {
-            console.log("local");
-            return;
+              console.log("local");
+              return; 
           }
-            this.subscribe(track);
+          this.subscribe(track);
         });
         room.on("removetrack", e => {
-          const track = e.track;
+          var track = e.track;
           if (!track) {
             return;
           }
 
-          const mediaElements = track.detach();
+          var mediaElements = track.detach();
           mediaElements.forEach(element => element.remove());
         });
 
@@ -225,9 +226,9 @@ export default {
       console.log("room publish successful");
     },
     async createRoom() {
-      const room = await apiStringee.createRoom();
-      const { roomId } = room;
-      const roomToken = await apiStringee.getRoomToken(roomId);
+      var room = await apiStringee.createRoom();
+      var { roomId } = room;
+      var roomToken = await apiStringee.getRoomToken(roomId);
 
       this.roomId = roomId;
       this.roomToken = roomToken;
@@ -236,24 +237,25 @@ export default {
       await this.authen();
       await this.publish();
     },
+
     join: async function() {
-      const roomToken = await apiStringee.getRoomToken(this.roomId);
+      var roomToken = await apiStringee.getRoomToken(this.roomId);
       this.roomToken = roomToken;
 
       await this.authen();
       await this.publish();
     },
     joinWithId: async function() {
-      const roomId = prompt("Dán Room ID vào đây nhé!");
+      var roomId = prompt("Dán Room ID vào đây nhé!");
       if (roomId) {
         this.roomId = roomId;
         await this.join();
       }
     },
     subscribe: async function(trackInfo) {
-      const track = await this.room.subscribe(trackInfo.serverId);
+      var track = await this.room.subscribe(trackInfo.serverId);
       track.on("ready", () => {
-        const videoElement = track.attach();
+        var videoElement = track.attach();
         this.addVideo(videoElement);
       });
     },
