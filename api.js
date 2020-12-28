@@ -1,6 +1,6 @@
 import axios from 'axios'
-  const PROJECT_ID = "SKIuNgIgQclWM0GFSPCJO7eervWS7hKkQg";
-  const PROJECT_SECRET = "Tk1NaUZGVElWZ3VpNFZVQlZVVTZseWFsWTlHTndyMw==";
+  const PROJECT_ID = "SKLv7kjZsheGnqCIHniLFdfRD47clOuCxF";
+  const PROJECT_SECRET = "b1F3U3dMbUdwekd6Vzh0WjV2R0dMdUxDWmtqdlFBdHc=";
   const BASE_URL = "https://api.stringee.com/v1/room2";
 
   const videoContainer = document.querySelector("#videos");

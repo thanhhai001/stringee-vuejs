@@ -83,7 +83,7 @@
                 <p>Bạn đang ở trong room <strong>{{roomId}}</strong>.</p>
                 <p>
                   Gửi link này cho bạn bè cùng join room nhé
-                  <a v-bind:href="roomUrl" target="_blank">{{roomUrl}}</a>.
+                  <!-- <a v-bind:href="roomUrl" target="_blank">{{roomUrl}}</a>. -->
                 </p>
                 <p>Hoặc bạn cũng có thể copy <code>{{roomId}}</code> để share.</p>
               </div>
@@ -119,11 +119,7 @@ export default {
   data: () => {
     return {
       courseId:'',
-      userId: '',
-      courses:[],
-      userToken: '',
-      restToken : "",
-      roomUrl : "",
+      userToken: "",
       roomId: "",
       roomToken: "",
       room: undefined,
@@ -158,12 +154,12 @@ export default {
 
     authen: function() {
       return new Promise(async resolve => {
-        var userId = `${(Math.random() * 100000).toFixed(6)}`;
-        var userToken = await apiStringee.getUserToken(userId);
+        const userId = `${(Math.random() * 100000).toFixed(6)}`;
+        const userToken = await apiStringee.getUserToken(userId);
         this.userToken = userToken;
 
         if (!this.callClient) {
-          var client = new StringeeClient();
+          const client = new StringeeClient();
 
           client.on("authen", function(res) {
             console.log("on authen: ", res);
@@ -175,7 +171,7 @@ export default {
       });
     },
     publish: async function(screenSharing = false) {
-      var localTrack = await StringeeVideo.createLocalVideoTrack(
+      const localTrack = await StringeeVideo.createLocalVideoTrack(
         this.callClient,
         {
           audio: true,
@@ -185,36 +181,36 @@ export default {
         }
       );
 
-      var videoElement = localTrack.attach();
+      const videoElement = localTrack.attach();
       this.addVideo(videoElement);
 
-      var roomData = await StringeeVideo.joinRoom(
+      const roomData = await StringeeVideo.joinRoom(
         this.callClient,
         this.roomToken
       );
-      var room = roomData.room;
+      const room = roomData.room;
       console.log({ roomData, room });
 
       if (!this.room) {
         this.room = room;
         room.clearAllOnMethos();
         room.on("addtrack", e => {
-          var track = e.info.track;
+          const track = e.info.track;
 
           console.log("addtrack", track);
           if (track.serverId === localTrack.serverId) {
-              console.log("local");
-              return; 
+            console.log("local");
+            return;
           }
           this.subscribe(track);
         });
         room.on("removetrack", e => {
-          var track = e.track;
+          const track = e.track;
           if (!track) {
             return;
           }
 
-          var mediaElements = track.detach();
+          const mediaElements = track.detach();
           mediaElements.forEach(element => element.remove());
         });
 
@@ -225,10 +221,10 @@ export default {
       await room.publish(localTrack);
       console.log("room publish successful");
     },
-    async createRoom() {
-      var room = await apiStringee.createRoom();
-      var { roomId } = room;
-      var roomToken = await apiStringee.getRoomToken(roomId);
+    createRoom: async function() {
+      const room = await apiStringee.createRoom();
+      const { roomId } = room;
+      const roomToken = await apiStringee.getRoomToken(roomId);
 
       this.roomId = roomId;
       this.roomToken = roomToken;
@@ -237,32 +233,31 @@ export default {
       await this.authen();
       await this.publish();
     },
-
     join: async function() {
-      var roomToken = await apiStringee.getRoomToken(this.roomId);
+      const roomToken = await apiStringee.getRoomToken(this.roomId);
       this.roomToken = roomToken;
 
       await this.authen();
       await this.publish();
     },
     joinWithId: async function() {
-      var roomId = prompt("Dán Room ID vào đây nhé!");
+      const roomId = prompt("Dán Room ID vào đây nhé!");
       if (roomId) {
         this.roomId = roomId;
         await this.join();
       }
     },
     subscribe: async function(trackInfo) {
-      var track = await this.room.subscribe(trackInfo.serverId);
+      const track = await this.room.subscribe(trackInfo.serverId);
       track.on("ready", () => {
-        var videoElement = track.attach();
+        const videoElement = track.attach();
         this.addVideo(videoElement);
       });
     },
     addVideo: function(video) {
       video.setAttribute("controls", "true");
       video.setAttribute("playsinline", "true");
-      document.querySelector('#videos').append(video);
+      document.querySelector('#videos').appendChild(video);
     }
   
   }
