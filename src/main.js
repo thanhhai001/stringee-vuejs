@@ -25,14 +25,17 @@ import Calendar from 'v-calendar/lib/components/calendar.umd';
 import DatePicker from 'vuejs-datepicker';
 import VTooltip from 'v-tooltip';
 import excel from 'vue-excel-export';
-import { StringeeClient, StringeeChat } from 'stringee-chat-js-sdk'
+import WebRTC from 'vue-webrtc';
+import * as io from 'socket.io-client';
+
 Vue.use(BlackDashboard);
 Vue.use(VueRouter);
 Vue.use(DatePicker);
 Vue.use(VTooltip);
 Vue.use(excel);
 Vue.use(RouterPrefetch);
-Vue.component('calendar', Calendar)
+Vue.component('calendar', Calendar);
+Vue.use(WebRTC);
 
 
 

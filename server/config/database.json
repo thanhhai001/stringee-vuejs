@@ -1,25 +1,24 @@
 {
  
   "development": {
-    "username": "postgres",
-    "password": "postgrest",
-    "database": "learn-online",
-    "host": "localhost",
-    "dialect": "postgres",
-    "port":5433
+    "username": "vgangptumwahle",
+    "password": "4ac9b48c65dcaef4ef0bf9414a3ab60610505304d00f08a2ed2b46fa3255f6d5",
+    "database": "dicaqqphg1l5f",
+    "host": "ec2-52-44-235-121.compute-1.amazonaws.com",
+    "dialect": "postgres"
   },
   "test": {
-    "username": "root",
-    "password": "dj@mw@r3",
-    "database": "node_sequelize",
-    "host": "127.0.0.1",
+    "username": "vgangptumwahle",
+    "password": "4ac9b48c65dcaef4ef0bf9414a3ab60610505304d00f08a2ed2b46fa3255f6d5",
+    "database": "dicaqqphg1l5f",
+    "host": "ec2-52-44-235-121.compute-1.amazonaws.com",
     "dialect": "postgres"
   },
   "production": {
-    "username": "root",
-    "password": "dj@mw@r3",
-    "database": "node_sequelize",
-    "host": "127.0.0.1",
+    "username": "vgangptumwahle",
+    "password": "4ac9b48c65dcaef4ef0bf9414a3ab60610505304d00f08a2ed2b46fa3255f6d5",
+    "database": "dicaqqphg1l5f",
+    "host": "ec2-52-44-235-121.compute-1.amazonaws.com",
     "dialect": "postgres"
   }
 }
