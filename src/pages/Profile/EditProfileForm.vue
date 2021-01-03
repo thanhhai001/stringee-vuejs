@@ -47,7 +47,7 @@
         <base-input label="All User" >
           <select v-model="userApprove">
             <option value="">Choose User to approve teacher</option>
-            <option v-for="user in users" :key="user.id" :value="user.id">{{user.fullName}} - {{user.id}}</option>
+            <option v-for="user in users" :key="user.id" :value="user.id">{{user.fullName}} - {{user.userName}}</option>
           </select>
         </base-input>
       </div>
