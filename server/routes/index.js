@@ -28,10 +28,13 @@ router.post('/api/create-course', CourseController.addCourse);
 router.post('/api/courses', CourseController.getCourse);
 router.post('/api/courses-update', CourseController.update);
 router.post('/api/course-detail', CourseController.getCourseById);
+router.post('/api/same-course-detail', CourseController.getSameCourse);
 router.post('/api/courses-by-user', CourseController.getCourseByUserId);
 
 /*UserCourse Router*/
 router.post('/api/statistical', UserCourseController.statisticalCourse);
+router.post('/api/regist-course', UserCourseController.registCourse);
+router.post('/api/check-regist-course', UserCourseController.isRegist);
 
 /*Topic*/
 router.get('/api/topic', TopicController.getAllTopic);

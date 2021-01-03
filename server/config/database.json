@@ -6,7 +6,7 @@
     "database": "learn-online",
     "host": "localhost",
     "dialect": "postgres",
-    "port": 5433
+    "port" : 5433
   },
   "test": {
     "username": "vgangptumwahle",

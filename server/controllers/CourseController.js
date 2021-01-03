@@ -88,14 +88,22 @@ module.exports = {
     });
   },
   async getCourseById(req, res) {
-    console.log(req);
-    // var courseId = req.params.id;
-    // return await Course.findOne({where:{id: courseId}}).then(course => {
-    //   res.status(200).send({
-    //     status: true,
-    //     course: course
-    //   });
-    // })
+    var courseId = req.body.courseId;
+    return await Course.findOne({where:{id: courseId}}).then(course => {
+      res.status(200).send({
+        status: true,
+        course: course
+      });
+    })
+  },
+  async getSameCourse(req, res) {
+    var courseId = req.body.courseId;
+    return await Course.findAll({where:{id: {[Op.notIn]:[courseId]} }, limit : 6}).then(course => {
+      res.status(200).send({
+        status: true,
+        course: course
+      });
+    })
   },
   async update(req, res) {
     var request = req.body;

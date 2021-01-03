@@ -167,7 +167,7 @@ export default {
       }
     },
     async courseDetail(courseId) {
-      this.$router.push('/course-detail');
+      this.$router.push('/course-detail?courseId='+courseId);
     },
   },
 };

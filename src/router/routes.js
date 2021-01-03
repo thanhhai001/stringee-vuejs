@@ -1,6 +1,3 @@
-import DashboardLayout from "@/layout/dashboard/DashboardLayout.vue";
-// import Login from "@/layout/dashboard/LoginLayout.vue";
-import Content from "@/layout/dashboard/Content.vue";
 // GeneralViews
 import NotFound from "@/pages/NotFoundPage.vue";
 

@@ -103,7 +103,7 @@ module.exports = {
       })
     }
     // Calculate Data =========================================================================
-    var fpGrowth = new fpgrowth.FPGrowth(.4);
+    var fpGrowth = new fpgrowth.FPGrowth(.6);
     fpGrowth.on('data', function (Itemset) {
       var items = _.sortBy(Itemset.items);
       var support = Itemset.support;
@@ -154,5 +154,31 @@ module.exports = {
         userCourses : result
       });
     })
+  },
+  async isRegist(req, res) {
+    var request = req.body;
+    var userCourse = await UserCourse.findOne({where:{userId:request.userId, courseId:request.courseId},raw:true});
+    if(userCourse) {
+      return res.status(200).send({
+        status: true,
+      })
+    } else {
+      return res.status(200).send({
+        status: false,
+      })
+    }
+  },
+  async registCourse(req, res) {
+    var request = req.body;
+    var myDate = new Date();
+      myDate.setTime(myDate.getTime() + 1000 * 60 * 60 * 9);
+    var today = myDate;
+    var userCourse = {courseId: request.courseId, userId: request.userId, registDate: today};
+    return await UserCourse.create(userCourse).then(userCourses => {
+      res.status(200).send({
+        status: true,
+        message: 'Regist Success'
+      })
+    });
   }
 }
