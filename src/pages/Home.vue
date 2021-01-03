@@ -13,11 +13,6 @@
           icon="tim-icons icon-video-66"
         />
         <sidebar-link
-          to="/create-course"
-          :name="$t('Create Course')"
-          icon="tim-icons icon-simple-add"
-        />
-        <sidebar-link
           to="/course"
           :name="$t('Course')"
           icon="tim-icons icon-book-bookmark"
@@ -131,7 +126,9 @@ export default {
   },
   data() {
     return {
-      teachers: [],
+      teachers:'',
+      users: '',
+      user: '',
     };
   },
   mounted() {
@@ -139,6 +136,7 @@ export default {
     if (!localStorage.getItem("user")) {
       this.$router.push("/");
     } else {
+      this.user = ls.get("user");
       this.listUser();
       this.listTeacher();
     }
@@ -154,7 +152,7 @@ export default {
       var user = await User.getUser();
       if (user.data.status) {
         console.log(user.data.users);
-        this.user = user.data.users;
+        this.users = user.data.users;
       }
     },
     async listTeacher() {

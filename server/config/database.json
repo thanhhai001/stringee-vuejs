@@ -2,11 +2,10 @@
  
   "development": {
     "username": "postgres",
-    "password": "postgrest",
+    "password": "postgres",
     "database": "learn-online",
     "host": "localhost",
-    "dialect": "postgres",
-    "port": 5433
+    "dialect": "postgres"
   },
   "test": {
     "username": "vgangptumwahle",

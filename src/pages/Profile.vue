@@ -13,11 +13,6 @@
           icon="tim-icons icon-video-66"
         />
         <sidebar-link
-          to="/create-course"
-          :name="$t('Create Course')"
-          icon="tim-icons icon-simple-add"
-        />
-        <sidebar-link
           to="/course"
           :name="$t('Course')"
           icon="tim-icons icon-book-bookmark"

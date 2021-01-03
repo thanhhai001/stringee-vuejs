@@ -3,7 +3,7 @@
     <div class="col-md-8" style="float:left">
       <card class="card-add-course">
         <h5 slot="header" class="title">New Course</h5>
-        <div v-if="showError" style="height:130px;padding-left: 40px;">
+        <div style="height:130px;padding-left: 40px;">
           <div class="error-message" :class="validateCourseName == true ? '' : 'hide-error'">* the course name has not been entered</div>
           <div class="error-message" :class="validateCourseTypeId == true ? '' : 'hide-error'">* the course type has not been selected</div>
           <div class="error-message" :class="validateTopicId == true ? '' : 'hide-error'">* the topic has not been selected</div>
@@ -11,8 +11,6 @@
           <div class="error-message" :class="validateCosts == true ? '' : 'hide-error'">* the Tuition has not been entered</div>
           <div class="error-message" :class="validateStartDate == true ? '' : 'hide-error'">* the start date has not been entered</div>
           <div class="error-message" :class="validateEndDate == true ? '' : 'hide-error'">* the end date has not been entered</div>
-        </div>
-        <div v-else style="height:130px;padding-left: 40px;display:none">
         </div>
         <div class="row" style="margin-top:15px">
           <div class="col-md-6 pr-md-1">
@@ -198,7 +196,8 @@ import Datepicker from 'vuejs-datepicker';
           // if (this.user.role == 2 && this.user.department_manager.length == 0) {
           //   return;
           // }
-          let result_course = await Course.register({
+          console.log(1);
+          var result_course = await Course.register({
             courseName: this.courseName,
             courseTypeId: this.courseTypeId,
             topicId: this.topicId,
@@ -246,53 +245,53 @@ import Datepicker from 'vuejs-datepicker';
       }
     },
     watch: {
-      "courseName" :function(new_value, old_value) {
+      courseName :function(new_value, old_value) {
         if(new_value != '' && new_value != undefined) {
-          this.validateCourseName == false;
+          this.validateCourseName = false;
         } else {
-          this.validateCourseName == true;
+          this.validateCourseName = true;
         }
       },
-      "courseTypeId" :function(new_value, old_value) {
+      courseTypeId :function(new_value, old_value) {
         if(new_value != '' && new_value != undefined) {
-          this.validateCourseTypeId == false;
+          this.validateCourseTypeId = false;
         } else {
-          this.validateCourseTypeId == true;
+          this.validateCourseTypeId = true;
         }
       },
-      "topicId" :function(new_value, old_value) {
+      topicId :function(new_value, old_value) {
         if(new_value != '' && new_value != undefined) {
-          this.validateTopicId == false;
+          this.validateTopicId = false;
         } else {
-          this.validateTopicId == true;
+          this.validateTopicId = true;
         }
       },
-      "courseDescription" :function(new_value, old_value) {
+      courseDescription :function(new_value, old_value) {
         if(new_value != '' && new_value != undefined) {
-          this.validateCourseDescription == false;
+          this.validateCourseDescription = false;
         } else {
-          this.validateCourseDescription == true;
+          this.validateCourseDescription = true;
         }
       },
-      "costs" :function(new_value, old_value) {
+      costs :function(new_value, old_value) {
         if(new_value != '' && new_value != undefined) {
-          this.validateCosts == false;
+          this.validateCosts = false;
         } else {
-          this.validateCosts == true;
+          this.validateCosts = true;
         }
       },
-      "startDate" :function(new_value, old_value) {
+      startDate :function(new_value, old_value) {
         if(new_value != '' && new_value != undefined) {
-          this.validateStartDate == false;
+          this.validateStartDate = false;
         } else {
-          this.validateStartDate == true;
+          this.validateStartDate = true;
         }
       },
-      "endDate" :function(new_value, old_value) {
+      endDate :function(new_value, old_value) {
         if(new_value != '' && new_value != undefined) {
-          this.validateEndDate == false;
+          this.validateEndDate = false;
         } else {
-          this.validateEndDate == true;
+          this.validateEndDate = true;
         }
       },
     }

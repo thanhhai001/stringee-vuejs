@@ -13,11 +13,6 @@
           icon="tim-icons icon-video-66"
         />
         <sidebar-link
-          to="/create-course"
-          :name="$t('Create Course')"
-          icon="tim-icons icon-simple-add"
-        />
-        <sidebar-link
           to="/course"
           :name="$t('Course')"
           icon="tim-icons icon-book-bookmark"
@@ -91,13 +86,6 @@ export default {
     
   },
   methods: {
-    async create(create){
-      this.course = create
-      // var result = await Course.create({course: this.course});
-      // if (result.response.status) {
-
-      // }
-    },
   }
 };
 </script>

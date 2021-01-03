@@ -19,4 +19,7 @@ export default {
   updateUser(data) {
     return Api().post('/api/updateUser',data,{});
   },
+  approveUser(data) {
+    return Api().post('/api/approveUser',data,{});
+  },
 }

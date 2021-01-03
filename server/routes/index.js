@@ -19,6 +19,7 @@ router.post('/api/register', UserController.register);
 router.post('/api/login', UserController.login);
 router.post('/api/updateUser', UserController.update);
 router.post('/api/userid', UserController.getUserById);
+router.post('/api/approveUser', UserController.approveUserById);
 router.get('/api/users', UserController.getUser);
 router.get('/api/teachers', UserController.getTeacher);
 

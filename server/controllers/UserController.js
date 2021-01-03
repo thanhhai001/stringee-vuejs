@@ -96,18 +96,10 @@ module.exports = {
     });
   },
   async getTeacher(req, res) {
-    var teacher = await User.findAll({
-      // where:{
-        
-      // },
-      include: [{
-        model: UserRole,
-        attributes: ['roleId'],
-      }],
-    }).then(teacher => {
+    var users = await User.findAll({where:{role:2},raw:true}).then(users => {
       return res.status(200).send({
         status: true,
-        users: users
+        teachers: users
       });
     });
   },
@@ -133,4 +125,33 @@ module.exports = {
       });
     });
   },
+  async approveUserById(req, res) {
+    var userId = req.body.userId;
+    console.log(userId);
+    var user = await User.findOne({
+      where:{
+        'id':userId,
+        'role' : 3
+      },
+      raw:true
+    });
+    if(user != null) {
+      user.role = 2;
+      var approve = await User.update(user, {
+        where:{
+          'id' : userId
+        }
+      }).then(users => {
+        return res.status(200).send({
+          status: true,
+          message: "Approve success"
+        });
+      });
+    } else {
+      return res.status(200).send({
+        status: true,
+        message: "Is user already a teacher"
+      });
+    }
+  }
 }

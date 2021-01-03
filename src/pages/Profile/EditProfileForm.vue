@@ -42,6 +42,17 @@
         </base-input>
       </div>
     </div>
+    <div v-show="admin" class="row">
+      <div class="col-md-6 pr-md-1">
+        <base-input label="All User" >
+          <select v-model="userApprove">
+            <option value="">Choose User to approve teacher</option>
+            <option v-for="user in users" :key="user.id" :value="user.id">{{user.fullName}} - {{user.id}}</option>
+          </select>
+        </base-input>
+      </div>
+      <base-button slot="footer" style="margin: 25px 0 25px 25px;backgroud:brown" type="primary" @click="approveRole()" fill>Approve Teacher</base-button>
+    </div>
     <base-button slot="footer" type="primary" @click="updateInfo" fill>Save</base-button>
   </card>
 </template>
@@ -57,9 +68,18 @@ import secure from "secure-ls";
         }
       }
     },
+    data: () => {
+      return {
+        userLogin: [],
+        users: [],
+        admin: false,
+        userApprove: ''
+      }
+    },
     mounted() {
       var ls = new secure();
       if (localStorage.getItem("user")) {
+        this.userLogin = ls.get("user");
         var user = ls.get("user");
         this.model.id = user.id;
         this.model.username = user.userName;
@@ -68,11 +88,29 @@ import secure from "secure-ls";
         this.model.fullName = user.fullName;
         this.model.address = user.address;
         this.model.username = user.userName;
+        if(this.userLogin.role == 1) {
+          this.admin = true;
+          this.getAllUser();
+        }
+        
       } else {
         this.$router.push("/");
       }
     },
     methods:{
+      async approveRole() {
+        var result = await User.approveUser({userId: this.userApprove});
+        if(result.data.status) {
+          alert(result.data.message);
+        }
+      },
+      async getAllUser() {
+        var result = await User.getUser();
+        if(result.data.status) {
+         this.users = result.data.users;
+         console.log(this.users);
+        }
+      },
       async updateInfo() {
         var result = await User.updateUser(this.model);
         if(result.data.status) {
@@ -83,4 +121,24 @@ import secure from "secure-ls";
   }
 </script>
 <style>
+select {
+  background: rgb(34, 42, 66, 30%);
+  border: solid 1px #2b3553;
+  border-radius: 0.4285rem;
+  font-size: 0.75rem;
+  font-family: "Poppins", sans-serif;
+  height: calc(2.25rem + 2px);
+  width: 100%;
+  color: rgba(255,255,255, .8);
+  padding: 10px 18px 10px 18px;
+}
+select:focus {
+  color: rgba(255,255,255, .8);
+  border-color: #e14eca;
+  outline: 0;
+}
+option{
+  background: white;
+  color: black;
+}
 </style>

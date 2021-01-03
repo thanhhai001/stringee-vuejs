@@ -13,11 +13,6 @@
           icon="tim-icons icon-video-66"
         />
         <sidebar-link
-          to="/create-course"
-          :name="$t('Create Course')"
-          icon="tim-icons icon-simple-add"
-        />
-        <sidebar-link
           to="/course"
           :name="$t('Course')"
           icon="tim-icons icon-book-bookmark"
@@ -52,6 +47,7 @@
                       name="keyword"
                       id="keyword">
                     </base-input>
+                    <base-button v-show="user.role != 3" @click="createCourse()" style="margin-left:20px;height:40px"><icon style="margin: -5px 10px 0 0;" class="tim-icons icon-simple-add" />Create Course</base-button>
                   </ul>
                 </div>
               </div>
@@ -116,6 +112,7 @@ export default {
   },
   data: () => {
     return {
+      user: '',
       keyword: "",
       courses: [],
       page: 1,
@@ -130,9 +127,13 @@ export default {
     if (!localStorage.getItem("user")) {
       this.$router.push("/");
     }
+    this.user = ls.get("user");
     this.load(this.page);
   },
   methods: {
+    createCourse (){
+      this.$router.push('/create-course');
+    },
     async load(page) {
       let listCourse = await Course.listCourse({
         page: this.page,

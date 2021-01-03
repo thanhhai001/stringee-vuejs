@@ -13,11 +13,6 @@
           icon="tim-icons icon-video-66"
         />
         <sidebar-link
-          to="/create-course"
-          :name="$t('Create Course')"
-          icon="tim-icons icon-simple-add"
-        />
-        <sidebar-link
           to="/course"
           :name="$t('Course')"
           icon="tim-icons icon-book-bookmark"
@@ -123,6 +118,7 @@ export default {
   },
   data: () => {
     return {
+      user: '',
       vi:'vi',
       fromDate:'',
       toDate:'',
@@ -155,6 +151,7 @@ export default {
     if (!localStorage.getItem("user")) {
       this.$router.push("/");
     }
+    this.user = ls.get("user");
     this.statistical();
   },
   methods: {

@@ -111,8 +111,7 @@ module.exports = {
     var listCourseId = [];
     var courses = await UserCourse.findAll({
       where:{
-        // userId: request.userId
-        userId: 1
+        userId: request.userId
       },
       raw: true
     }).then(function(result) {
