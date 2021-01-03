@@ -43,22 +43,20 @@
               <div class="row">
                 <div class="col-md-12 my-3">
                   <h2>Room</h2>
-                  <input v-model="roomId">
+                  <input v-show="false" v-model="roomId">
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-12">
-                  <div class="">
-                    <vue-webrtc ref="webrtc"
-                                width="100%"
-                                :roomId="roomId"
-                                v-on:joined-room="logEvent"
-                                v-on:left-room="logEvent"
-                                v-on:opened-room="logEvent"
-                                v-on:share-started="logEvent"
-                                v-on:share-stopped="logEvent"
-                                @error="onError" />
-                  </div>
+                  <vue-webrtc ref="webrtc"
+                              width="100%"
+                              :roomId="roomId"
+                              v-on:joined-room="logEvent"
+                              v-on:left-room="logEvent"
+                              v-on:opened-room="logEvent"
+                              v-on:share-started="logEvent"
+                              v-on:share-stopped="logEvent"
+                              @error="onError" />
                   <div class="row">
                     <div class="col-md-12 my-3">
                       <button type="button" class="btn btn-primary" @click="onJoin">Join</button>
@@ -181,15 +179,26 @@ export default {
   padding-top: 1rem;
 }
 
-#videos {
+/* #videos {
   display: flex;
   flex-wrap: wrap;
   margin-top: 20px;
-}
+} */
 
-#videos video {
+/* #videos video {
   flex: 1 1 50%;
   padding: 0;
   min-width: 0;
+} */
+
+video:first {
+  width: 250px;
+  height: 150px;
+  padding-left: 7px ;
+}
+
+video {
+  width: 250px;
+  height: 150px;
 }
 </style>
